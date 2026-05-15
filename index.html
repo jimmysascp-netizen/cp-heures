@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CP Heures">
+<title>CP · Déclaration Heures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ VARIABLES ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --bg:        #0f0f1a;
+  --surface:   #16162a;
+  --surface2:  #1e1e38;
+  --accent:    #f0c040;
+  --accent2:   #6e8efb;
+  --text:      #e8e8f0;
+  --muted:     #6b6b8a;
+  --border:    rgba(255,255,255,0.08);
+  --success:   #4ecb8d;
+  --danger:    #ff6b6b;
+  --radius:    14px;
+}
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ BASE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100dvh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 0 56px;
+  overflow-x: hidden;
+}
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.header {
+  width: 100%;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 20px 16px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px);
+}
+.logo { width: 36px; height: 36px; background: var(--accent); border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px;
+  color: var(--bg); flex-shrink: 0; }
+.header-text h1 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+.header-text p  { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; margin-top: 1px; }
+.date-pill {
+  margin-left: auto;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 5px 10px; font-size: 10px; color: var(--accent);
+  letter-spacing: 0.5px; white-space: nowrap;
+}
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ LAYOUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.container {
+  width: 100%; max-width: 620px;
+  padding: 22px 16px 0;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.label {
+  font-size: 9px; font-weight: 500; letter-spacing: 2px;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+  animation: up 0.35s ease both;
+}
+@keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ FORM ELEMENTS ━━━━━━━━━━━━━━━━━━━━━ */
+select, input[type="number"], textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 9px; color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 13px; padding: 10px 12px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none; appearance: none;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px; cursor: pointer;
+}
+select:focus, input:focus, textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(240,192,64,0.1);
+}
+select option { background: #1e1e38; }
+textarea { resize: none; min-height: 68px; line-height: 1.5; font-size: 12px; }
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ LIGNES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.lignes-list { display: flex; flex-direction: column; gap: 10px; }
+
+.ligne {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 11px; padding: 12px;
+  animation: up 0.2s ease both;
+}
+/* Couleur bord gauche selon mode */
+.ligne.mode-affaire  { border-left: 3px solid var(--accent2); }
+.ligne.mode-interne  { border-left: 3px solid #9b7fe8; }
+.ligne.mode-structure{ border-left: 3px solid #e87f7f; }
+
+.ligne-row1 { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
+.ligne-row2 { display: grid; grid-template-columns: 1fr 80px; gap: 8px; }
+
+/* Phase pills */
+.phases {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.phase-btn {
+  padding: 5px 12px; border-radius: 100px; font-size: 11px; font-family: 'DM Mono', monospace;
+  border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.phase-btn.active         { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+.phase-btn.active.amont   { background: #f0a040; border-color: #f0a040; }
+.phase-btn.active.etudes  { background: var(--accent2); border-color: var(--accent2); }
+.phase-btn.active.chantier{ background: var(--success); border-color: var(--success); color: var(--bg); }
+
+.remove-btn {
+  width: 30px; height: 30px; border: none;
+  background: rgba(255,107,107,0.1); color: var(--danger);
+  border-radius: 7px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  transition: background 0.2s; flex-shrink: 0; align-self: start;
+}
+.remove-btn:hover { background: rgba(255,107,107,0.25); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ TOTAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.total-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; background: var(--surface2); border-radius: 10px;
+  border: 1px solid var(--border); margin-top: 12px;
+}
+.total-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.total-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: var(--accent); }
+.total-val span { font-size: 12px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ ADD BTN ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.add-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: none; border: 1px dashed rgba(110,142,251,0.4);
+  color: var(--accent2); border-radius: 10px;
+  padding: 10px 16px; font-family: 'DM Mono', monospace; font-size: 12px;
+  cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s;
+  width: 100%; margin-top: 10px;
+}
+.add-btn:hover { background: rgba(110,142,251,0.08); border-color: var(--accent2); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ SUBMIT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.submit-btn {
+  width: 100%; padding: 16px; background: var(--accent); color: var(--bg);
+  border: none; border-radius: var(--radius);
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.submit-btn:hover:not(:disabled) { background: #f7d060; transform: translateY(-1px); }
+.submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.spinner {
+  width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2);
+  border-top-color: var(--bg); border-radius: 50%;
+  animation: spin 0.7s linear infinite; display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ LOADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.loader-overlay {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999; gap: 16px; transition: opacity 0.4s;
+}
+.loader-ring {
+  width: 40px; height: 40px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.loader-text { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━ TOAST ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--success); color: var(--bg);
+  padding: 12px 24px; border-radius: 100px;
+  font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 9999; white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.err  { background: var(--danger); color: #fff; }
+.hint { font-size: 10px; color: var(--muted); text-align: center; letter-spacing: 0.5px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Loader initial -->
+<div class="loader-overlay" id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Chargement de la configuration…</div>
+</div>
+
+<header class="header">
+  <div class="logo">CP</div>
+  <div class="header-text">
+    <h1>Déclaration Heures</h1>
+    <p>CORSE PERSPECTIVES</p>
+  </div>
+  <div class="date-pill" id="datePill">—</div>
+</header>
+
+<div class="container">
+
+  <!-- Salarié -->
+  <div class="card" style="animation-delay:.05s">
+    <div class="label">Collaborateur</div>
+    <select id="salarie">
+      <option value="">— Sélectionner —</option>
+    </select>
+  </div>
+
+  <!-- Lignes -->
+  <div class="card" style="animation-delay:.12s">
+    <div class="label">Temps par affaire / catégorie</div>
+    <div class="lignes-list" id="lignesList"></div>
+    <button class="add-btn" onclick="addLigne()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Ajouter une ligne
+    </button>
+    <div class="total-bar">
+      <span class="total-label">Total du jour</span>
+      <span class="total-val" id="totalVal">0<span>h</span></span>
+    </div>
+  </div>
+
+  <!-- Note -->
+  <div class="card" style="animation-delay:.18s">
+    <div class="label">Note <span style="color:var(--muted);font-size:9px">(optionnel)</span></div>
+    <textarea id="note" placeholder="Problème rencontré, déplacement, absence partielle…"></textarea>
+  </div>
+
+  <!-- Submit -->
+  <div style="animation:up .4s .22s ease both;opacity:0;animation-fill-mode:both">
+    <button class="submit-btn" id="submitBtn" onclick="submit()">
+      <div class="spinner" id="spinner"></div>
+      <span id="submitLabel">Envoyer la déclaration</span>
+    </button>
+    <p class="hint">Données transmises au Google Sheets CP</p>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// ██████╗ CONFIGURATION — À METTRE À JOUR PAR JIMMY
+// ════════════════════════════════════════════════════════════════
+
+// URL du script Apps Script (backend Google Sheets)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiTq2sd_32qpwwVm30qEKFdNU9lpQ4dvPbhVfDau9M_jOULPPN9PBuo1T_zDQFKq_bng/exec";
+
+// URL de l'onglet Config du Google Sheets — format CSV public
+// Sheets → Fichier → Partager → Publier sur le web → Onglet "Config" → CSV
+// Exemple : https://docs.google.com/spreadsheets/d/XXXX/gviz/tq?tqx=out:csv&sheet=Config
+const CONFIG_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSFvfnvqulyEAZGJTDer2KOcNHBlHBI0Cl2xsjLByidCNcju5mdNXCXEQpxYfXhL_CaCnDO4lG4Jcsf/pub?gid=0&single=true&output=csv";
+
+// ════════════════════════════════════════════════════════════════
+// Phases fixes — NE PAS MODIFIER
+// ════════════════════════════════════════════════════════════════
+const PHASES_AFFAIRE   = ["AMONT", "ÉTUDES", "CHANTIER"];
+const CATS_HORS_AFFAIRE = ["INTERNE", "STRUCTURE CP"];
+
+// ════════════════════════════════════════════════════════════════
+// État
+// ════════════════════════════════════════════════════════════════
+let affaires = [];
+let salaries = [];
+let rowId = 0;
+const now = new Date();
+
+// Date badge
+document.getElementById('datePill').textContent =
+  now.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' }).toUpperCase();
+
+// ════════════════════════════════════════════════════════════════
+// Chargement config depuis Google Sheets
+// ════════════════════════════════════════════════════════════════
+async function loadConfig() {
+  if (CONFIG_SHEET_URL === "COLLER_URL_CONFIG_SHEET_ICI") {
+    // MODE DÉMO — données fictives
+    salaries = ["Jimmy","Dominique","Loïc","Pierre","Salarié 5","Salarié 6"];
+    affaires = ["Affaire A","Affaire B","Affaire C"];
+    initForm();
+    return;
+  }
+  try {
+    const res = await fetch(CONFIG_SHEET_URL);
+    const csv = await res.text();
+    const rows = csv.split('\n').map(r => r.split(',').map(c => c.replace(/"/g,'').trim())).filter(r => r[0]);
+    rows.forEach(r => {
+      if (r[0]) salaries.push(r[0]);   // Colonne A → salariés
+      if (r[2]) affaires.push(r[2]);   // Colonne C → affaires
+    });
+    salaries = [...new Set(salaries.filter(Boolean))];
+    affaires = [...new Set(affaires.filter(Boolean))];
+    initForm();
+  } catch(e) {
+    console.error("Erreur chargement config:", e);
+    toast("Erreur de chargement — mode hors-ligne", true);
+    salaries = ["Jimmy","Dominique","Loïc","Pierre"];
+    affaires  = [];
+    initForm();
+  }
+}
+
+function initForm() {
+  // Peupler le select salariés
+  const sel = document.getElementById('salarie');
+  salaries.forEach(s => {
+    const o = document.createElement('option');
+    o.value = o.textContent = s;
+    sel.appendChild(o);
+  });
+  // Masquer loader
+  const loader = document.getElementById('loader');
+  loader.style.opacity = '0';
+  setTimeout(() => loader.style.display = 'none', 400);
+  // Première ligne vide
+  addLigne();
+}
+
+// ════════════════════════════════════════════════════════════════
+// Gestion des lignes
+// ════════════════════════════════════════════════════════════════
+function addLigne() {
+  const id = rowId++;
+  const list = document.getElementById('lignesList');
+  const div = document.createElement('div');
+  div.className = 'ligne mode-affaire';
+  div.dataset.id = id;
+  div.dataset.phase = '';
+
+  div.innerHTML = `
+    <div class="ligne-row1">
+      <select class="aff-sel" onchange="onAffaireChange(${id})">
+        <option value="">— Affaire / Catégorie —</option>
+        <optgroup label="Affaires">
+          ${affaires.map(a => `<option value="affaire::${a}">${a}</option>`).join('')}
+        </optgroup>
+        <optgroup label="Hors affaire">
+          ${CATS_HORS_AFFAIRE.map(c => `<option value="cat::${c}">${c}</option>`).join('')}
+        </optgroup>
+      </select>
+      <button class="remove-btn" onclick="removeLigne(${id})">×</button>
+    </div>
+    <div class="ligne-row2">
+      <div class="phases" id="phases-${id}">
+        ${PHASES_AFFAIRE.map(ph => `
+          <button class="phase-btn ${ph.toLowerCase().replace('é','e')}"
+            onclick="selectPhase(${id},'${ph}')">${ph}</button>
+        `).join('')}
+      </div>
+      <input type="number" class="h-inp" min="0" max="24" step="0.5" placeholder="0h"
+        oninput="updateTotal()" />
+    </div>
+  `;
+  list.appendChild(div);
+  updateTotal();
+}
+
+function onAffaireChange(id) {
+  const div = document.querySelector(`.ligne[data-id="${id}"]`);
+  const val = div.querySelector('.aff-sel').value;
+  const phasesDiv = document.getElementById(`phases-${id}`);
+  div.dataset.phase = '';
+
+  if (!val) {
+    div.className = 'ligne mode-affaire';
+    phasesDiv.innerHTML = PHASES_AFFAIRE.map(ph =>
+      `<button class="phase-btn ${ph.toLowerCase().replace('é','e')}" onclick="selectPhase(${id},'${ph}')">${ph}</button>`
+    ).join('');
+    return;
+  }
+  if (val.startsWith('cat::')) {
+    const cat = val.replace('cat::','');
+    div.className = 'ligne ' + (cat === 'INTERNE' ? 'mode-interne' : 'mode-structure');
+    phasesDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);padding:4px 0">${cat} — pas de phase</span>`;
+    div.dataset.phase = cat;
+  } else {
+    div.className = 'ligne mode-affaire';
+    phasesDiv.innerHTML = PHASES_AFFAIRE.map(ph =>
+      `<button class="phase-btn ${ph.toLowerCase().replace('é','e')}" onclick="selectPhase(${id},'${ph}')">${ph}</button>`
+    ).join('');
+  }
+}
+
+function selectPhase(id, phase) {
+  const div = document.querySelector(`.ligne[data-id="${id}"]`);
+  div.dataset.phase = phase;
+  div.querySelectorAll('.phase-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === phase);
+  });
+}
+
+function removeLigne(id) {
+  const el = document.querySelector(`.ligne[data-id="${id}"]`);
+  if (el) { el.remove(); updateTotal(); }
+}
+
+function updateTotal() {
+  const total = [...document.querySelectorAll('.h-inp')]
+    .reduce((s, i) => s + (parseFloat(i.value) || 0), 0);
+  document.getElementById('totalVal').innerHTML =
+    `${Number.isInteger(total) ? total : total.toFixed(1)}<span>h</span>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// Soumission
+// ════════════════════════════════════════════════════════════════
+async function submit() {
+  const salarie = document.getElementById('salarie').value;
+  if (!salarie) { toast("Sélectionne ton nom d'abord 👆", true); return; }
+
+  const lignes = [];
+  let total = 0;
+  let valid = true;
+
+  document.querySelectorAll('.ligne').forEach(div => {
+    const val   = div.querySelector('.aff-sel').value;
+    const h     = parseFloat(div.querySelector('.h-inp').value) || 0;
+    const phase = div.dataset.phase;
+    if (!val || h === 0) return;
+
+    if (val.startsWith('affaire::') && !phase) { valid = false; return; }
+
+    const affaire = val.startsWith('affaire::') ? val.replace('affaire::','') : val.replace('cat::','');
+    lignes.push({ affaire, phase: phase || '—', heures: h });
+    total += h;
+  });
+
+  if (!valid) { toast("Sélectionne une phase pour chaque affaire ☝️", true); return; }
+  if (lignes.length === 0) { toast("Aucune heure saisie ✋", true); return; }
+
+  const note      = document.getElementById('note').value.trim();
+  const dateISO   = now.toISOString().split('T')[0];
+  const timestamp = now.toLocaleString('fr-FR');
+  const payload   = { date: dateISO, salarie, lignes, totalHeures: total, note, timestamp };
+
+  // UI
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('submitLabel').textContent = 'Envoi…';
+
+  try {
+    if (SCRIPT_URL === "COLLER_URL_APPS_SCRIPT_ICI") {
+      await new Promise(r => setTimeout(r, 1000));
+      console.log("DÉMO payload:", payload);
+    } else {
+      await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    }
+    toast(`✓ ${total}h déclarées — bonne soirée !`);
+    reset();
+  } catch(e) {
+    toast("Erreur réseau — réessaie", true);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('submitLabel').textContent = 'Envoyer la déclaration';
+  }
+}
+
+function reset() {
+  document.getElementById('salarie').value = '';
+  document.getElementById('note').value = '';
+  document.getElementById('lignesList').innerHTML = '';
+  rowId = 0;
+  addLigne();
+}
+
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' err' : '');
+  setTimeout(() => t.classList.add('show'), 50);
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ════════════════════════════════════════════════════════════════
+// Init
+// ════════════════════════════════════════════════════════════════
+loadConfig();
+</script>
+</body>
+</html>
