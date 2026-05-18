@@ -305,7 +305,10 @@ async function loadConfig() {
   try {
     const res = await fetch(CONFIG_SHEET_URL);
     const csv = await res.text();
-    const rows = csv.split('\n').map(r => r.split(',').map(c => c.replace(/"/g,'').trim())).filter(r => r[0]);
+    const rows = csv
+  .split('\n')
+  .map(r => r.split(',').map(c => c.replace(/"/g,'').trim()))
+  .filter(r => r[0] || r[2]);
     rows.forEach(r => {
       if (r[0]) salaries.push(r[0]);   // Colonne A → salariés
       if (r[2]) affaires.push(r[2]);   // Colonne C → affaires
