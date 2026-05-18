@@ -13,16 +13,16 @@
 <style>
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━ VARIABLES ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
-  --bg:        #0f0f1a;
-  --surface:   #16162a;
-  --surface2:  #1e1e38;
-  --accent:    #f0c040;
-  --accent2:   #6e8efb;
-  --text:      #e8e8f0;
-  --muted:     #6b6b8a;
-  --border:    rgba(255,255,255,0.08);
-  --success:   #4ecb8d;
-  --danger:    #ff6b6b;
+  --bg:        #f7f8fb;
+  --surface:   #ffffff;
+  --surface2:  #f9fafc;
+  --accent:    #f4c430;
+  --accent2:   #4f7cff;
+  --text:      #171827;
+  --muted:     #7b8194;
+  --border:    rgba(23,24,39,0.12);
+  --success:   #38b678;
+  --danger:    #ef4444;
   --radius:    14px;
 }
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━ BASE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -90,7 +90,10 @@ select {
 select:focus, input:focus, textarea:focus {
   border-color: var(--accent); box-shadow: 0 0 0 3px rgba(240,192,64,0.1);
 }
-select option { background: #1e1e38; }
+select option {
+  background: #ffffff;
+  color: #171827;
+}
 textarea { resize: none; min-height: 68px; line-height: 1.5; font-size: 12px; }
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━ LIGNES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .lignes-list { display: flex; flex-direction: column; gap: 10px; }
