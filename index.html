@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CP Heures">
+<meta name="mobile-web-app-capable" content="yes">
 <title>CP · Déclaration Heures</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -370,6 +371,7 @@ function addLigne() {
         <option value="">— Affaire / Catégorie —</option>
         <optgroup label="Affaires">
           ${affaires.map(a => `<option value="affaire::${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')}
+        </optgroup>
         <optgroup label="Hors affaire">
           ${CATS_HORS_AFFAIRE.map(c => `<option value="cat::${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')}
         </optgroup>
@@ -480,13 +482,11 @@ async function submit() {
       await new Promise(r => setTimeout(r, 1000));
       console.log("DÉMO payload:", payload);
     } else {
-      const response = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         body: JSON.stringify(payload)
       });
-      
-      const result = await response.text();
-      console.log("Réponse Apps Script :", result);
     }
     toast(`✓ ${total}h déclarées — bonne soirée !`);
     reset();
