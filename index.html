@@ -482,11 +482,14 @@ async function submit() {
       await new Promise(r => setTimeout(r, 1000));
       console.log("DÉMO payload:", payload);
     } else {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify(payload)
-      });
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "payload=" + encodeURIComponent(JSON.stringify(payload))
+    });
     }
     toast(`✓ ${total}h déclarées — bonne soirée !`);
     reset();
