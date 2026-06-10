@@ -459,7 +459,7 @@ async function submit() {
     if (val.startsWith('affaire::') && !phase) { valid = false; return; }
 
     const affaire = val.startsWith('affaire::') ? val.replace('affaire::','') : val.replace('cat::','');
-    lignes.push({ affaire, phase: phase || '—', heures: h });
+    lignes.push({ affaire, phase: phase || '', heures: h });
     total += h;
   });
 
