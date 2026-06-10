@@ -410,7 +410,7 @@ function onAffaireChange(id) {
     const cat = val.replace('cat::','');
     div.className = 'ligne ' + (cat === 'INTERNE' ? 'mode-interne' : 'mode-structure');
     phasesDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);padding:4px 0">${cat} — pas de phase</span>`;
-    div.dataset.phase = cat;
+    div.dataset.phase = '';
   } else {
     div.className = 'ligne mode-affaire';
     phasesDiv.innerHTML = PHASES_AFFAIRE.map(ph =>
