@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f0f1a">
+<meta name="theme-color" content="#f7f8fb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CP Heures">
@@ -269,7 +269,7 @@ textarea { resize: none; min-height: 68px; line-height: 1.5; font-size: 12px; }
 // ════════════════════════════════════════════════════════════════
 
 // URL du script Apps Script (backend Google Sheets)
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5BEdPlP_hsqjri5QozTog1WXwiUAC05voZzqQzrZ8-LABkY6ud-R5b8z2-nuLMqur2g/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby12FPw90aZosHgTxZjEWqKbJYAIXX8S0a6ytZvo9LDDrIvFYnqxSoTA1cvp0ZQQqAPJQ/exec";
 
 // URL de l'onglet Config du Google Sheets — format CSV public
 // Sheets → Fichier → Partager → Publier sur le web → Onglet "Config" → CSV
@@ -309,9 +309,10 @@ async function loadConfig() {
     const res = await fetch(CONFIG_SHEET_URL);
     const csv = await res.text();
     const rows = csv
-  .split('\n')
-  .map(r => r.split(',').map(c => c.replace(/"/g,'').trim()))
-  .filter(r => r[0] || r[2]);
+    .split(/\r?\n/)
+    .map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/))
+    .map(r => r.map(c => c.replace(/^"|"$/g, '').trim()))
+    .filter(r => r[0] || r[2]);
     rows.forEach(r => {
       if (r[0]) salaries.push(r[0]);   // Colonne A → salariés
       if (r[2]) affaires.push(r[2]);   // Colonne C → affaires
@@ -347,6 +348,14 @@ function initForm() {
 // ════════════════════════════════════════════════════════════════
 // Gestion des lignes
 // ════════════════════════════════════════════════════════════════
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 function addLigne() {
   const id = rowId++;
   const list = document.getElementById('lignesList');
@@ -360,10 +369,9 @@ function addLigne() {
       <select class="aff-sel" onchange="onAffaireChange(${id})">
         <option value="">— Affaire / Catégorie —</option>
         <optgroup label="Affaires">
-          ${affaires.map(a => `<option value="affaire::${a}">${a}</option>`).join('')}
-        </optgroup>
+          ${affaires.map(a => `<option value="affaire::${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')}
         <optgroup label="Hors affaire">
-          ${CATS_HORS_AFFAIRE.map(c => `<option value="cat::${c}">${c}</option>`).join('')}
+          ${CATS_HORS_AFFAIRE.map(c => `<option value="cat::${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')}
         </optgroup>
       </select>
       <button class="remove-btn" onclick="removeLigne(${id})">×</button>
@@ -457,8 +465,8 @@ async function submit() {
   if (lignes.length === 0) { toast("Aucune heure saisie ✋", true); return; }
 
   const note      = document.getElementById('note').value.trim();
-  const dateISO   = now.toISOString().split('T')[0];
-  const timestamp = now.toLocaleString('fr-FR');
+  const dateISO = new Date().toLocaleDateString('sv-SE');
+  const timestamp = new Date().toLocaleString('fr-FR');
   const payload   = { date: dateISO, salarie, lignes, totalHeures: total, note, timestamp };
 
   // UI
