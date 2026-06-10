@@ -480,8 +480,13 @@ async function submit() {
       await new Promise(r => setTimeout(r, 1000));
       console.log("DÉMO payload:", payload);
     } else {
-      await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+      const response = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      
+      const result = await response.text();
+      console.log("Réponse Apps Script :", result);
     }
     toast(`✓ ${total}h déclarées — bonne soirée !`);
     reset();
