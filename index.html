@@ -315,8 +315,22 @@ async function loadConfig() {
     .map(r => r.map(c => c.replace(/^"|"$/g, '').trim()))
     .filter(r => r[0] || r[2]);
     rows.forEach(r => {
-      if (r[0]) salaries.push(r[0]);   // Colonne A → salariés
-      if (r[2]) affaires.push(r[2]);   // Colonne C → affaires
+      const collaborateur = r[0];
+      const affaire = r[2];
+    
+      if (
+        collaborateur &&
+        collaborateur.toLowerCase() !== "collaborateur"
+      ) {
+        salaries.push(collaborateur);
+      }
+    
+      if (
+        affaire &&
+        affaire.toLowerCase() !== "affaire"
+      ) {
+        affaires.push(affaire);
+      }
     });
     salaries = [...new Set(salaries.filter(Boolean))];
     affaires = [...new Set(affaires.filter(Boolean))];
